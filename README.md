@@ -1,143 +1,231 @@
-# #gRpc Client
+# Wallet Connector @nixjs23n6/wallet-connector
 
-gRPC for Web Clients.
+A simple, maximally extensible, dependency minimized framework for building modern Ethereum and other dApps.
+
+## @nixjs23n6/wc-core
 
 ### Install
 
 Install these dependencies:
 
-`yarn add @nixjs23n6/core`
+`yarn add @nixjs23n6/wc-core`
 
 ### Setup & Usage
 
 ```javascript
-import { Client } from "@nixjs23n6/core";
-import * as pbjs from "google-protobuf/google/protobuf/empty_pb";
-import { ExampleClient } from "@example-proto/example_grpc_web_pb";
+import React, { FC, useMemo, useState } from 'react';
+import {
+    WALLET_TYPE,
+    WalletProvider,
+    BinanceProvider,
+    MetaMaskProvider,
+    WalletConnect,
+} from '@nixjs23n6/wc-core'
 
-const grpcInstance = new Client({ url: "https://example.nixjs" });
+export const Wallet: FC = () => { 
+    const [state, setState] = useState({
+        walletType: WALLET_TYPE.META_MASK,
+        loading: false
+    })
 
-grpcInstance.connect(ExampleClient, false);
+    const fetchProviderInstance = useCallback(async (wt: WALLET_TYPE) => {
+        try {
+            provider = new WalletProvider([BinanceProvider, MetaMaskProvider, WalletConnect], {
+                walletConnectConfig: {
+                    qrcodeModalOptions: {
+                        mobileLinks: ['safepal', 'metamask'],
+                    },
+                },
+                logger: {
+                    debug: true,
+                },
+            })
+            provider.connect(wt)
+            provider.instance.connect()
+        } catch (error) {
+            console.log(error)
+        }
+    }, [])
 
-grpcInstance.interceptorHeader(
-  (config: any) => {
-    return config;
-  },
-  (error: any) => {
-    return Promise.resolve(error);
-    // return Promise.reject(error)
-  }
-);
-grpcInstance.interceptorResponse(
-  (response: any) => {
-    return response;
-    // return response && response.toObject()
-  },
-  (error: any) => {
-    return Promise.resolve(error);
-    // return Promise.reject(error)
-  }
-);
+    useEffect(() => {
+        fetchProviderInstance(state.walletType)
+    }, [state.walletType, fetchProviderInstance])
 
-grpcInstance.configure();
+    useEffect(() => {
+        if (provider.instance) {
+            provider.instance.getChainId().then((res: any) => {
+                console.log('getChainId', res)
+            })
 
-grpcInstance
-  .send("getExample", new pbjs.Empty())
-  .then((res: any) => console.log(res));
+            provider.instance.getNetwork().then((res: any) => {
+                console.log('getNetwork', res)
+            })
+
+            provider.instance.getGasPrice().then((res: any) => {
+                console.log('getGasPrice', res)
+            })
+
+            provider.instance.getAddress().then((res: any) => {
+                console.log('getAddress', res)
+            })
+
+            provider.instance.getBalance().then((res: any) => {
+                console.log('getBalance', res)
+            })
+
+            provider.instance.getTokenDecimal('0xf76205FB45B1c688EEA4423ab5fE386E6c7F78C8').then((res: any) => {
+                console.log('getTokenDecimal', res)
+            })
+
+            provider.instance.getTokenBalance('0xf76205FB45B1c688EEA4423ab5fE386E6c7F78C8', 18).then((res: any) => {
+                console.log('getTokenBalance', res)
+            })
+
+            provider.instance.getTransaction('0x3aafdd0dc30dc1965f22d3bdc5d3e6f15a88efd6f83dbbe613ddca5a0cb81d49').then((res: any) => {
+                console.log('getTransaction', res)
+            })
+
+            provider.instance.getTransactionReceipt('0x3aafdd0dc30dc1965f22d3bdc5d3e6f15a88efd6f83dbbe613ddca5a0cb81d49').then((res: any) => {
+                console.log('getTransactionReceipt', res)
+            })
+            provider.instance.onAccountChanged &&
+                provider.instance.onAccountChanged((data: any) => {
+                    console.log('onAccountChanged')
+                    console.log(data)
+                })
+
+            provider.instance.onDisconnect &&
+                provider.instance.onDisconnect((data: any) => {
+                    console.log('onDisconnect')
+                    console.log(data)
+                })
+        }
+    }, [provider, state.walletType])
+
+    return <App/>
+};
 ```
 
-# #gRPC Client React
-
-A react context which helps you to deal with gRPC web.
+## @nixjs23n6/wc-react
 
 ### Install
 
 Install these dependencies:
 
-`yarn add @nixjs23n6/core @nixjs23n6/react`
+`yarn add @nixjs23n6/wc-core @nixjs23n6/wc-react`
 
 ### Setup
 
 ```javascript
-import React, { FC } from 'react';
-import { GRPCProvider, ClientServiceSourceProps } from '@nixjs23n6/react'
-import { ExampleClient1 } from '@example-proto/example_grpc_web_pb1'
-import { ExampleClient2 } from '@example-proto/example_grpc_web_pb2'
-import { ExampleClient3 } from '@example-proto/example_grpc_web_pb3'
+import React, { FC, useMemo } from 'react';
+import {
+    WALLET_TYPE,
+    MetaMaskProvider,
+    WalletConnect,
+    BinanceProvider,
+    RPCS_DEFAULT,
+    MOBILE_LINKS_DEFAULT,
+} from '@nixjs23n6/wc-core'
+import { WalletConnectionProvider } from '@nixjs23n6/wc-react'
 
-const ClientServices: ClientServiceSourceProps[] = [
-    {
-        key: 'client1',
-        source: ExampleClient1,
-        config: { // optionals
-            url: 'https://example.nixjs',
-        },
-    },
-    {
-        key: 'client2',
-        source: ExampleClient2,
-        config: { // optionals
-            promiseType: true,
-            storeKey: 'sessionAccessToken',
-            storeType: 'session',
-        },
-    },
-    {
-        key: 'client3',
-        source: ExampleClient3,
-        config: { // optionals
-            promiseType: true,
-        },
-    },
-]
+export const Wallet: FC = () => {
+    const wallets = useMemo(() => [MetaMaskProvider, BinanceProvider, WalletConnect], []) 
 
-interface AppPropArg = {}
-
-export const App: FC<AppPropArg> = () => {
     return (
-        <GRPCProvider
-        url="https://tech.example.nixjs"
-        ClientServices={ClientServices}
-        promiseType={false}
-        logger={{ debug: true }}>
-            <GrpcComponent/>
+        <WalletConnectionProvider
+        wallets={wallets}
+        logger={{ debug: true }}
+        walletConnectConfig={{
+            rpc: RPCS_DEFAULT,
+            qrcodeModalOptions: {
+                mobileLinks: MOBILE_LINKS_DEFAULT,
+            },
+        }}>
+            <WalletComponent/>
             { /* Your app's components go here, nested within the context providers. */ }
-        </GRPCProvider>
+        </WalletConnectionProvider>
     );
 };
-
 ```
 
 ### Usage
 
 ```javascript
-import React, { FC, useEffect } from 'react';
-import { useGRPC } from '@nixjs23n6/react'
-import * as pbjs from 'google-protobuf/google/protobuf/empty_pb'
+import React, { FC, useCallback } from 'react';
+import { WalletConnectionProvider, useWallet } from '@nixjs23n6/wc-react'
 
-interface GRPCPropArg = {}
+export const WalletComponent: FC = () => {
+    const { instance, onConnect, providerConnected, instanceConnected } = useWallet()
 
-export const GRPCComponent: FC<GRPCPropArg> = () => {
-    const context = useGRPC()
+    console.log('providerConnected', providerConnected)
+    console.log('instanceConnected', instanceConnected)
 
-    console.log('GRPC context', context)
+    useEffect(() => {
+        if (providerConnected) onConnect(WALLET_TYPE.META_MASK)
+    }, [providerConnected, onConnect])
+        useEffect(() => {
+        if (instance) {
+            instance.getChainId().then((res: any) => {
+                console.log('getChainId', res)
+            })
+        }
+    }, [instance])
 
     useEffect(() => {
         if (instance) {
-            context.paymentClient.send('getExample1', new pbjs.Empty(), { authorization:'AccessToken'})
-            .then((res: any) => {
-                console.log('🚀 Response', res)
+            instance.getChainId().then((res: any) => {
+                console.log('getChainId', res)
             })
-            context.landingPageClient.send('getExample2', new pbjs.Empty()).then((res: any) => console.log(res))
+
+            instance.getNetwork().then((res: any) => {
+                console.log('getNetwork', res)
+            })
+
+            instance.getGasPrice().then((res: any) => {
+                console.log('getGasPrice', res)
+            })
+
+            instance.getAddress().then((res: any) => {
+                console.log('getAddress', res)
+            })
+
+            instance.getBalance().then((res: any) => {
+                console.log('getBalance', res)
+            })
+
+            instance.getTokenDecimal('0xf76205FB45B1c688EEA4423ab5fE386E6c7F78C8').then((res: any) => {
+                console.log('getTokenDecimal', res)
+            })
+
+            instance.getTokenBalance('0xf76205FB45B1c688EEA4423ab5fE386E6c7F78C8', 18).then((res: any) => {
+                console.log('getTokenBalance', res)
+            })
+
+            instance.getTransaction('0x3aafdd0dc30dc1965f22d3bdc5d3e6f15a88efd6f83dbbe613ddca5a0cb81d49').then((res: any) => {
+                console.log('getTransaction', res)
+            })
+
+            instance.getTransactionReceipt('0x3aafdd0dc30dc1965f22d3bdc5d3e6f15a88efd6f83dbbe613ddca5a0cb81d49').then((res: any) => {
+                console.log('getTransactionReceipt', res)
+            })
+            instance.onAccountChanged &&
+                instance.onAccountChanged((data: any) => {
+                    console.log('onAccountChanged')
+                    console.log(data)
+                })
+
+            instance.onDisconnect &&
+                instance.onDisconnect((data: any) => {
+                    console.log('onDisconnect')
+                    console.log(data)
+                })
         }
     }, [instance])
 
     return (<div>
+        {WALLET_TYPE.META_MASK}
         { /* Your app's components go here, nested within the context providers. */ }
     </div>)
 };
 ```
 
-# #Reference & Example
-
-Visit: <https://wallet-connector.vercel.app/>
