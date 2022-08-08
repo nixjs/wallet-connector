@@ -1,6 +1,6 @@
 {
   "name": "@nixjs23n6/wc-core",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple, maximally extensible, dependency minimized framework for building modern Ethereum and other dApps.",
   "sideEffects": false,
   "main": "lib/cjs/index.js",
@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@nixjs23n6/wc-types": "^1.0.0",
-    "@walletconnect/web3-provider": "^1.7.8",
+    "@walletconnect/web3-provider": "^1.8.0",
     "debug": "^4.3.4",
     "ethers": "^5.6.9"
   },
