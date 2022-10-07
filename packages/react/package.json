@@ -1,6 +1,6 @@
 {
   "name": "@nixjs23n6/wc-react",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A simple, maximally extensible, dependency minimized framework for building modern dApps using React.",
   "sideEffects": false,
   "main": "lib/cjs/index.js",
@@ -51,7 +51,7 @@
     "react-dom": ">=16"
   },
   "devDependencies": {
-    "@nixjs23n6/wc-core": "^1.0.5",
+    "@nixjs23n6/wc-core": "^1.0.6",
     "react": "^17.0.0"
   }
 }

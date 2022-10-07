@@ -24,9 +24,8 @@ export class TronLinkProvider extends BaseProvider {
   async connect(): Promise<void> {
     this.context = PLATFORM_CONTEXT.TRONWEB;
     if (Helpers.isTronInstalled()) {
-      this.walletInstance = this.context;
       this.log(
-        "» 🚀 Established connection successfully to %cMetamask Wallet Provider",
+        "» 🚀 Established connection successfully to %TronLink Wallet Provider",
         "color: #FABB51; font-size:14px"
       );
     }
