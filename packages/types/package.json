@@ -1,6 +1,6 @@
 {
   "name": "@nixjs23n6/wc-types",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "Typings for Wallet Connector.",
   "sideEffects": false,
   "main": "lib/cjs/index.js",
