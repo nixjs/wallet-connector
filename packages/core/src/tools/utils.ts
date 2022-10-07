@@ -42,6 +42,12 @@ export class Utils {
           installed: Helpers.isCoin98Installed(),
         };
         break;
+      case WALLET_TYPE.TRON_LINK:
+        walletInstalled = {
+          walletType: WALLET_TYPE.TRON_LINK,
+          installed: Helpers.isTronInstalled(),
+        };
+        break;
       default:
         walletInstalled = {
           walletType: null,
