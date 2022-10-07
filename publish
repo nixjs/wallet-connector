@@ -1,0 +1,20 @@
+#!/bin/bash
+PROJECT_ROOT="./packages"
+BASE_ROOT="wc-"
+
+NODE_VERSION=$(node -p -e "require('./lerna.json').version")
+
+echo -e "\033[0;34mCurrent Version: $NODE_VERSION"
+
+yarn build
+
+for dir in $PROJECT_ROOT/*/; do
+    BASENAME=`basename "$dir"`
+    # echo $BASENAME
+    if [ $BASENAME != "website" ]
+    then
+        text=$(echo -e "\033[0;32mPublishing the $BASENAME packages.")
+        echo $text
+        yarn workspace @nixjs23n6/$BASE_ROOT$BASENAME publish --force
+    fi
+done;
