@@ -377,8 +377,7 @@ export class TronLinkProvider extends BaseProvider {
   async signMessage(message: string): Promise<Interfaces.ResponseData<string>> {
     try {
       const msgHex =
-        (Helpers.isHex(message) && message) ||
-        this.walletInstance.toHex(message);
+        (message.match(/^0x/) && message) || this.walletInstance.toHex(message);
       const signature: string = await this.walletInstance.trx.signMessage(
         msgHex
       );
