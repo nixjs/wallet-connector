@@ -10,11 +10,19 @@ yarn build
 
 for dir in $PROJECT_ROOT/*/; do
     BASENAME=`basename "$dir"`
+    PACKAGE_VERSION=$(cat $PROJECT_ROOT/$BASENAME/package.json \
+  | grep version \
+  | head -1 \
+  | awk -F: '{ print $2 }' \
+  | sed 's/[",]//g')
+
+  echo  "\033[0;34mThe [$BASENAME] package has version: $PACKAGE_VERSION"
+
     # echo $BASENAME
     if [ $BASENAME != "website" ]
     then
         text=$(echo -e "\033[0;32mPublishing the $BASENAME packages.")
         echo $text
-        yarn workspace @nixjs23n6/$BASE_ROOT$BASENAME publish --force
+        yarn workspace @nixjs23n6/$BASE_ROOT$BASENAME publish --force --new-version $PACKAGE_VERSION
     fi
 done;
