@@ -21,9 +21,20 @@ export class TronLinkProvider extends BaseProvider {
     return WALLET_TYPE.TRON_LINK;
   }
 
+  protected config(): void {
+    try {
+      this.walletInstance = (window as any)[this.context];
+    } catch (error) {
+      throw BaseErrors.ERROR.MISSING_OR_INVALID.format({
+        name: "walletInstance | Tronweb",
+      });
+    }
+  }
+
   async connect(): Promise<void> {
     this.context = PLATFORM_CONTEXT.TRONWEB;
     if (Helpers.isTronInstalled()) {
+      this.config();
       this.log(
         "» 🚀 Established connection successfully to %TronLink Wallet Provider",
         "color: #FABB51; font-size:14px"
