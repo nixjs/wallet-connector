@@ -76,7 +76,19 @@ export class Utils {
       return null;
     }
     if (chainId && chainId.host) {
-      return chainId.host;
+      if (
+        [
+          CHAIN_TYPE_MAINNET.TRON_DAPP_CHAIN,
+          CHAIN_TYPE_MAINNET.TRON_GRID,
+          CHAIN_TYPE_MAINNET.TRON_STACK,
+          CHAIN_TYPE_TESTNET.TRON_DAPP_CHAIN,
+          CHAIN_TYPE_TESTNET.TRON_NILE,
+          CHAIN_TYPE_TESTNET.TRON_SHASTA,
+        ].includes(chainId.host)
+      ) {
+        return NETWORK_WALLET.TRON;
+      }
+      return null;
     }
     const cId: ChainIdType<[number, string]> =
       (Helpers.isHex(chainId) && Helpers.toNumberFromHex(chainId)) || chainId;
