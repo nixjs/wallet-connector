@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { providers } from 'ethers'
-import { Interfaces, Types } from '@nixjs23n6/wc-types'
-import { WalletProvider, BaseProvider, ProviderInstance, WALLET_TYPE } from '@nixjs23n6/wc-core'
+import { Interfaces, Types } from '@nixjs23n6/types'
+import { WalletProvider, BaseProvider, ProviderInstance, WALLET_TYPE, TronLink } from '@nixjs23n6/wc-core'
 import * as providerTypes from './types'
 
 export interface WalletContextState {
@@ -17,8 +17,12 @@ export interface WalletContextState {
     onDestroy(walletType: WALLET_TYPE): void
     onDestroyInstance(): void
 
-    getTransaction(transactionHash: string): Promise<Interfaces.ResponseData<providers.TransactionResponse>>
-    sendTransaction(transactionRequest: providers.TransactionRequest): Promise<Interfaces.ResponseData<providers.TransactionResponse>>
+    getTransaction(
+        transactionHash: string
+    ): Promise<Interfaces.ResponseData<providers.TransactionResponse | TronLink.TronTypes.TransactionResponse>>
+    sendTransaction(
+        transactionRequest: providers.TransactionRequest
+    ): Promise<Interfaces.ResponseData<providers.TransactionResponse | TronLink.TronTypes.TransactionResponse>>
     signMessage(message: string): Promise<Interfaces.ResponseData<string>>
 }
 

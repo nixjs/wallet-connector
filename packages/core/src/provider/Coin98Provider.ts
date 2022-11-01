@@ -1,4 +1,4 @@
-import { Interfaces } from '@nixjs23n6/wc-types'
+import { Interfaces } from '@nixjs23n6/types'
 import { BaseProvider } from './BaseProvider'
 import { PLATFORM_CONTEXT, WALLET_TYPE } from '../constants'
 import { Helpers } from '../tools/helpers'
@@ -27,19 +27,19 @@ export class Coin98Provider extends BaseProvider {
             return {
                 status: 'ERROR',
                 error: ERROR.WALLET_NOT_INSTALLED.format({
-                    name: 'Coi98 Wallet',
-                }),
+                    name: 'Coi98 Wallet'
+                })
             }
         }
         if (await this.isLoggedIn) {
             return {
                 status: 'SUCCESS',
-                data: true,
+                data: true
             }
         }
         return {
             status: 'ERROR',
-            error: ERROR.ACCOUNT_NOT_BE_LOGIN.format({ name: 'Coin98 Wallet' }),
+            error: ERROR.ACCOUNT_NOT_BE_LOGIN.format({ name: 'Coin98 Wallet' })
         }
     }
 }

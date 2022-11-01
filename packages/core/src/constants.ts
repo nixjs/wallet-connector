@@ -1,5 +1,3 @@
-import { IRPCMap } from "@walletconnect/types";
-
 export enum WALLET_TYPE {
   META_MASK = "META_MASK",
   BINANCE_CHAIN_WALLET = "BINANCE_CHAIN_WALLET",
@@ -49,7 +47,6 @@ export enum GLOBAL_CONTEXT {
   META_MASK = "MetaMaskCtx",
   BINANCE = "BinanceCtx",
   COIN98 = "Coin98Ctx",
-  WALLET_CONNECT = "WalletConnectCtx",
   WALLET_CONNECTOR = "WalletCtx",
 }
 
@@ -95,7 +92,16 @@ export const FEE_CONFIG: Record<
   },
 };
 
-export const RPCS_DEFAULT: IRPCMap = {
+// export const RPCS_DEFAULT: IRPCMap = {
+//   1: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+//   3: "https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+//   4: "https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+//   56: "https://bsc-dataseed.binance.org/",
+//   97: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+//   250: "https://rpc.ftm.tools/",
+// };
+
+export const RPCS_DEFAULT: any = {
   1: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
   3: "https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
   4: "https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",

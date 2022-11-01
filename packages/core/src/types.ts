@@ -1,5 +1,5 @@
 import * as ethers from 'ethers'
-import { Types } from '@nixjs23n6/wc-types'
+import { Types } from '@nixjs23n6/types'
 
 export type ResponseParserType = {
     success: any

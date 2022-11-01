@@ -1,7 +1,7 @@
 import * as ethers from 'ethers'
 import { JsonFragment } from '@ethersproject/abi'
 import debug from 'debug'
-import { Types, Interfaces, BaseErrors } from '@nixjs23n6/wc-types'
+import { Types, Interfaces, BaseErrors } from '@nixjs23n6/types'
 import { PLATFORM_CONTEXT, NETWORK_WALLET } from '../constants'
 import * as providerTypes from '../types'
 import * as providerInterfaces from '../interfaces'
@@ -9,6 +9,7 @@ import { Helpers } from '../tools/helpers'
 import { Utils } from '../tools/utils'
 import { ERC20 } from '../erc20'
 import { showLogger } from './logger'
+import { TronTypes, TriggerSmartContractTypes } from './tronlink/types'
 
 export abstract class BaseProvider {
     public log: debug.Debugger
@@ -76,7 +77,7 @@ export abstract class BaseProvider {
             this.etherSigner = this.etherProvider.getSigner()
         } catch (error) {
             throw BaseErrors.ERROR.MISSING_OR_INVALID.format({
-                name: 'walletInstance | etherProvider | etherSigner',
+                name: 'walletInstance | etherProvider | etherSigner'
             })
         }
     }
@@ -105,7 +106,7 @@ export abstract class BaseProvider {
             let result: number = await this.etherSigner.getChainId()
             if (!result) {
                 throw BaseErrors.ERROR.DATA_NOT_FOUND.format({
-                    name: 'chainId',
+                    name: 'chainId'
                 })
             }
             if (Helpers.isHex(result)) {
@@ -113,20 +114,20 @@ export abstract class BaseProvider {
             }
             showLogger('✅ Get the chain id', this.log, 'Success', {
                 method: 'getChainId()',
-                chainId: result,
+                chainId: result
             })
             return {
                 status: 'SUCCESS',
-                data: result,
+                data: result
             }
         } catch (error) {
             showLogger('❌ Get the chain id', this.log, 'Error', {
                 method: 'getChainId()',
-                error,
+                error
             })
             return {
                 status: 'ERROR',
-                error,
+                error
             }
         }
     }
@@ -136,19 +137,19 @@ export abstract class BaseProvider {
         if (result.status === 'SUCCESS') {
             showLogger('✅ Get the network', this.log, 'Success', {
                 method: 'getNetwork()',
-                network: result,
+                network: result
             })
             return {
                 status: 'SUCCESS',
-                data: Utils.onGetNetwork(result.data),
+                data: Utils.onGetNetwork(result.data)
             }
         }
         showLogger('❌ Get the network', this.log, 'Error', {
-            method: 'getNetwork()',
+            method: 'getNetwork()'
         })
         return {
             status: 'ERROR',
-            error: BaseErrors.ERROR.DATA_NOT_FOUND.format(),
+            error: BaseErrors.ERROR.DATA_NOT_FOUND.format()
         }
     }
 
@@ -157,20 +158,20 @@ export abstract class BaseProvider {
             const result: ethers.BigNumber = await this.etherSigner.getGasPrice()
             showLogger('✅ Get the gas price', this.log, 'Success', {
                 method: 'getGasPrice()',
-                gasPrice: result,
+                gasPrice: result
             })
             return {
                 status: 'SUCCESS',
-                data: Helpers.fromHexParser(result),
+                data: Helpers.fromHexParser(result)
             }
         } catch (error) {
             showLogger('❌ Get the gas price', this.log, 'Error', {
                 method: 'getGasPrice()',
-                error,
+                error
             })
             return {
                 status: 'ERROR',
-                error,
+                error
             }
         }
     }
@@ -180,20 +181,20 @@ export abstract class BaseProvider {
             const result: string = await this._getAccountAddressApi()
             showLogger('✅ Get the address', this.log, 'Success', {
                 method: 'getAddress()',
-                address: result,
+                address: result
             })
             return {
                 status: 'SUCCESS',
-                data: result,
+                data: result
             }
         } catch (error) {
             showLogger('❌ Get the address', this.log, 'Error', {
                 method: 'getAddress()',
-                error,
+                error
             })
             return {
                 status: 'ERROR',
-                error,
+                error
             }
         }
     }
@@ -203,20 +204,20 @@ export abstract class BaseProvider {
             const result: ethers.BigNumber = await this.etherSigner.getBalance()
             showLogger('✅ Get the balance', this.log, 'Success', {
                 method: 'getBalance()',
-                balance: result,
+                balance: result
             })
             return {
                 status: 'SUCCESS',
-                data: Helpers.fromHexParser(result),
+                data: Helpers.fromHexParser(result)
             }
         } catch (error) {
             showLogger('❌ Get the balance', this.log, 'Error', {
                 method: 'getBalance()',
-                error,
+                error
             })
             return {
                 status: 'ERROR',
-                error,
+                error
             }
         }
     }
@@ -227,44 +228,44 @@ export abstract class BaseProvider {
             showLogger('✅ Get the token decimals', this.log, 'Success', {
                 method: 'getTokenDecimal(args)',
                 parameters: {
-                    contractAddress,
+                    contractAddress
                 },
-                decimals: result,
+                decimals: result
             })
             return {
                 status: 'SUCCESS',
-                data: result,
+                data: result
             }
         } catch (error) {
             showLogger('❌ Get the token decimals', this.log, 'Error', {
                 method: 'getTokenDecimal(args)',
                 parameters: {
-                    contractAddress,
+                    contractAddress
                 },
-                error,
+                error
             })
             return {
                 status: 'ERROR',
-                error,
+                error
             }
         }
     }
 
-    async getTokenBalance(contractAddress: string, dec?: number): Promise<Interfaces.ResponseData<providerTypes.HexParser>> {
+    async getTokenBalance(contractAddress: string, decimals?: number): Promise<Interfaces.ResponseData<providerTypes.HexParser>> {
         try {
             const contractAbiFragment: ethers.utils.FunctionFragment = Utils.onGetFunctionAbi(ERC20, 'balanceOf')
             const contract: ethers.Contract = new ethers.Contract(contractAddress, [contractAbiFragment]).connect(this.etherSigner)
             const address: string = await this._getAccountAddressApi()
             const b: ethers.BigNumber[] = await contract.functions.balanceOf(address)
             let d: Types.Nullable<number> = null
-            if (dec && Helpers.isNotNullOrUndefined(dec)) {
-                d = dec
+            if (decimals && Helpers.isNotNullOrUndefined(decimals)) {
+                d = decimals
             }
             d = await this._getTokenDecimalApi(contractAddress)
 
             if (!Helpers.isNotNullOrUndefined(d)) {
                 throw BaseErrors.ERROR.DATA_NOT_FOUND.format({
-                    name: 'decimals',
+                    name: 'decimals'
                 })
             }
             const bl: ethers.BigNumber = b && b.length > 0 ? b[0] : ethers.BigNumber.from(0)
@@ -272,55 +273,57 @@ export abstract class BaseProvider {
                 method: 'getTokenBalance(args)',
                 parameters: {
                     contractAddress,
-                    dec,
+                    decimals
                 },
-                balance: Helpers.fromHexParser(bl, dec),
+                balance: Helpers.fromHexParser(bl, decimals)
             })
             return {
                 status: 'SUCCESS',
-                data: Helpers.fromHexParser(bl, dec),
+                data: Helpers.fromHexParser(bl, decimals)
             }
         } catch (error) {
             showLogger('❌ Get the token balance', this.log, 'Error', {
                 method: 'getTokenBalance(args)',
                 parameters: {
                     contractAddress,
-                    dec,
+                    decimals
                 },
-                error,
+                error
             })
             return {
                 status: 'ERROR',
-                error,
+                error
             }
         }
     }
 
-    async getTransaction(transactionHash: string): Promise<Interfaces.ResponseData<ethers.providers.TransactionResponse>> {
+    async getTransaction(
+        transactionHash: string
+    ): Promise<Interfaces.ResponseData<ethers.providers.TransactionResponse | TronTypes.TransactionResponse>> {
         try {
             const txIn: ethers.providers.TransactionResponse = await this.etherProvider.getTransaction(transactionHash)
             showLogger('✅ Get the transaction', this.log, 'Success', {
                 method: 'getTransaction(args)',
                 parameters: {
-                    transactionHash,
+                    transactionHash
                 },
-                txIn,
+                txIn
             })
             return {
                 status: 'SUCCESS',
-                data: txIn,
+                data: txIn
             }
         } catch (error) {
             showLogger('❌ Get the transaction', this.log, 'Error', {
                 method: 'getTransaction(args)',
                 parameters: {
-                    transactionHash,
+                    transactionHash
                 },
-                error,
+                error
             })
             return {
                 status: 'ERROR',
-                error,
+                error
             }
         }
     }
@@ -331,25 +334,25 @@ export abstract class BaseProvider {
             showLogger('✅ Get the transaction receipt', this.log, 'Success', {
                 method: 'getTransactionReceipt(args)',
                 parameters: {
-                    transactionHash,
+                    transactionHash
                 },
-                txIn,
+                txIn
             })
             return {
                 status: 'SUCCESS',
-                data: txIn,
+                data: txIn
             }
         } catch (error) {
             showLogger('❌ Get the transaction receipt', this.log, 'Error', {
                 method: 'getTransactionReceipt(args)',
                 parameters: {
-                    transactionHash,
+                    transactionHash
                 },
-                error,
+                error
             })
             return {
                 status: 'ERROR',
-                error,
+                error
             }
         }
     }
@@ -365,56 +368,56 @@ export abstract class BaseProvider {
                 method: 'getTransactionLogDecoded(args)',
                 parameters: { transactionHash, ABIs },
                 txIn,
-                logs,
+                logs
             })
             return {
                 status: 'SUCCESS',
                 data: {
                     transactionHash,
-                    logs,
-                },
+                    logs
+                }
             }
         } catch (error) {
             showLogger('❌ Get the transaction log decoded', this.log, 'Error', {
                 method: 'getTransactionLogDecoded(args)',
                 parameters: {
                     transactionHash,
-                    ABIs,
+                    ABIs
                 },
-                error,
+                error
             })
             return {
                 status: 'ERROR',
-                error,
+                error
             }
         }
     }
 
     async sendTransaction(
-        transactionRequest: ethers.providers.TransactionRequest
-    ): Promise<Interfaces.ResponseData<ethers.providers.TransactionResponse>> {
+        transactionRequest: ethers.providers.TransactionRequest | TriggerSmartContractTypes.TriggerSmartContractRequest
+    ): Promise<Interfaces.ResponseData<ethers.providers.TransactionResponse | TronTypes.TransactionResponse>> {
         try {
-            const txIn: ethers.providers.TransactionResponse = await this.etherSigner.sendTransaction(transactionRequest)
+            const txIn: ethers.providers.TransactionResponse = await this.etherSigner.sendTransaction(
+                transactionRequest as ethers.providers.TransactionRequest
+            )
             showLogger('✅ Sends the transaction', this.log, 'Success', {
                 method: 'sendTransaction(args)',
-                parameters: { ...transactionRequest },
-                txIn,
+                parameters: transactionRequest ? transactionRequest : {},
+                txIn
             })
             return {
                 status: 'SUCCESS',
-                data: txIn,
+                data: txIn
             }
         } catch (error) {
             showLogger('❌ Sends the transaction', this.log, 'Error', {
                 method: 'sendTransaction(args)',
-                parameters: {
-                    ...transactionRequest,
-                },
-                error,
+                parameters: transactionRequest ? transactionRequest : {},
+                error
             })
             return {
                 status: 'ERROR',
-                error,
+                error
             }
         }
     }
@@ -422,24 +425,24 @@ export abstract class BaseProvider {
     async sendNativeToken(
         to: string,
         amount: number,
-        options: Omit<providerInterfaces.TransactionRequest, 'dec'>
-    ): Promise<Interfaces.ResponseData<ethers.providers.TransactionResponse>> {
+        options?: Omit<providerInterfaces.TransactionRequest, 'dec'>
+    ): Promise<Interfaces.ResponseData<ethers.providers.TransactionResponse | TronTypes.TransactionResponse>> {
         try {
-            const tx: Types.Deferrable<ethers.providers.TransactionRequest> = options
+            const tx: Types.Deferrable<ethers.providers.TransactionRequest> = options || {}
             tx.to = to
             tx.value = ethers.utils.parseEther(`${amount}`)
             tx.data = '0x'
             tx.from = await this._getAccountAddressApi()
-            if (options.maxFeePerGas) {
+            if (options && options.maxFeePerGas) {
                 tx.maxFeePerGas = ethers.utils.hexlify(options.maxFeePerGas)
             }
-            if (options.maxPriorityFeePerGas) {
+            if (options && options.maxPriorityFeePerGas) {
                 tx.maxPriorityFeePerGas = ethers.utils.hexlify(options.maxPriorityFeePerGas)
             }
-            if (!Helpers.isNotNullOrUndefined(options.gasLimit)) {
+            if (options && !Helpers.isNotNullOrUndefined(options.gasLimit)) {
                 tx.gasLimit = await this.etherSigner.estimateGas(tx)
             }
-            if (!Helpers.isNotNullOrUndefined(options.gasPrice)) {
+            if (options && !Helpers.isNotNullOrUndefined(options.gasPrice)) {
                 tx.gasPrice = await this.etherSigner.getGasPrice()
             }
             const txIn: ethers.providers.TransactionResponse = await this.etherSigner.sendTransaction(tx)
@@ -448,13 +451,13 @@ export abstract class BaseProvider {
                 parameters: {
                     amount,
                     to,
-                    options,
+                    options
                 },
-                txIn,
+                txIn
             })
             return {
                 status: 'SUCCESS',
-                data: txIn,
+                data: txIn
             }
         } catch (error) {
             showLogger('❌ Sends the native token', this.log, 'Error', {
@@ -462,13 +465,13 @@ export abstract class BaseProvider {
                 parameters: {
                     amount,
                     to,
-                    options,
+                    options
                 },
-                error,
+                error
             })
             return {
                 status: 'ERROR',
-                error,
+                error
             }
         }
     }
@@ -477,23 +480,24 @@ export abstract class BaseProvider {
         contractAddress: string,
         amount: number,
         to: string,
-        options: providerInterfaces.TransactionRequest
-    ): Promise<Interfaces.ResponseData<ethers.providers.TransactionResponse>> {
+        options: providerInterfaces.TransactionRequest | TriggerSmartContractTypes.Option
+    ): Promise<Interfaces.ResponseData<ethers.providers.TransactionResponse | TronTypes.TransactionResponse>> {
         try {
             const decimalAbi: ethers.utils.FunctionFragment = Utils.onGetFunctionAbi(ERC20, 'decimals')
             const transferAbi: ethers.utils.FunctionFragment = Utils.onGetFunctionAbi(ERC20, 'transfer')
             const contractAbiFragment: ethers.utils.FunctionFragment[] = [decimalAbi, transferAbi]
             const contract: ethers.Contract = new ethers.Contract(contractAddress, contractAbiFragment, this.etherSigner)
             let decimals: number
-            if (options.dec) {
-                decimals = ethers.BigNumber.from(options.dec).toNumber()
+            const ourOptions = options as providerInterfaces.TransactionRequest
+            if (ourOptions.dec) {
+                decimals = ethers.BigNumber.from(ourOptions.dec).toNumber()
             } else {
                 const dec: number[] = await contract.functions.decimals()
                 if (dec.length > 0) {
                     decimals = dec[0]
                 }
                 throw BaseErrors.ERROR.DATA_NOT_FOUND.format({
-                    name: 'decimals',
+                    name: 'decimals'
                 })
             }
 
@@ -502,20 +506,20 @@ export abstract class BaseProvider {
                 ethers.utils.parseUnits(amount.toString(), decimals)
             )
 
-            const tx: Types.Deferrable<ethers.providers.TransactionRequest> = options
+            const tx: Types.Deferrable<ethers.providers.TransactionRequest> = ourOptions
             tx.to = unsignedTx.to
             tx.data = unsignedTx.data
             tx.from = unsignedTx.from
-            if (options.maxFeePerGas) {
-                tx.maxFeePerGas = ethers.utils.hexlify(options.maxFeePerGas)
+            if (ourOptions.maxFeePerGas) {
+                tx.maxFeePerGas = ethers.utils.hexlify(ourOptions.maxFeePerGas)
             }
-            if (options.maxPriorityFeePerGas) {
-                tx.maxPriorityFeePerGas = ethers.utils.hexlify(options.maxPriorityFeePerGas)
+            if (ourOptions.maxPriorityFeePerGas) {
+                tx.maxPriorityFeePerGas = ethers.utils.hexlify(ourOptions.maxPriorityFeePerGas)
             }
-            if (!Helpers.isNotNullOrUndefined(options.gasLimit)) {
+            if (!Helpers.isNotNullOrUndefined(ourOptions.gasLimit)) {
                 tx.gasLimit = await this.etherSigner.estimateGas(tx)
             }
-            if (!Helpers.isNotNullOrUndefined(options.gasPrice)) {
+            if (!Helpers.isNotNullOrUndefined(ourOptions.gasPrice)) {
                 tx.gasPrice = await this.etherSigner.getGasPrice()
             }
             const txIn: ethers.providers.TransactionResponse = await this.etherSigner.sendTransaction(tx)
@@ -525,13 +529,13 @@ export abstract class BaseProvider {
                     contractAddress,
                     amount,
                     to,
-                    options,
+                    options
                 },
-                txIn,
+                txIn
             })
             return {
                 status: 'SUCCESS',
-                data: txIn,
+                data: txIn
             }
         } catch (error) {
             showLogger('❌ Sends the token', this.log, 'Error', {
@@ -540,13 +544,13 @@ export abstract class BaseProvider {
                     contractAddress,
                     amount,
                     to,
-                    options,
+                    options
                 },
-                error,
+                error
             })
             return {
                 status: 'ERROR',
-                error,
+                error
             }
         }
     }
@@ -557,25 +561,25 @@ export abstract class BaseProvider {
             showLogger('✅ Signs the message', this.log, 'Success', {
                 method: 'signMessage(args)',
                 parameters: {
-                    message,
+                    message
                 },
-                signature,
+                signature
             })
             return {
                 status: 'SUCCESS',
-                data: signature,
+                data: signature
             }
         } catch (error) {
             showLogger('❌ Signs the message', this.log, 'Error', {
                 method: 'signMessage(args)',
                 parameters: {
-                    message,
+                    message
                 },
-                error,
+                error
             })
             return {
                 status: 'ERROR',
-                error,
+                error
             }
         }
     }

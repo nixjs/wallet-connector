@@ -18,8 +18,7 @@ import {
     WALLET_TYPE,
     WalletProvider,
     BinanceProvider,
-    MetaMaskProvider,
-    WalletConnect,
+    MetaMaskProvider
 } from '@nixjs23n6/wc-core'
 
 export const Wallet: FC = () => { 
@@ -30,12 +29,7 @@ export const Wallet: FC = () => {
 
     const fetchProviderInstance = useCallback(async (wt: WALLET_TYPE) => {
         try {
-            provider = new WalletProvider([BinanceProvider, MetaMaskProvider, WalletConnect], {
-                walletConnectConfig: {
-                    qrcodeModalOptions: {
-                        mobileLinks: ['safepal', 'metamask'],
-                    },
-                },
+            provider = new WalletProvider([BinanceProvider, MetaMaskProvider], {
                 logger: {
                     debug: true,
                 },

@@ -1,5 +1,5 @@
 import debug from 'debug'
-import { Types } from '@nixjs23n6/wc-types'
+import { Types } from '@nixjs23n6/types'
 
 export interface MessageLogger {
     method?: string

@@ -1,5 +1,5 @@
 import debug from "debug";
-import { Interfaces, Types } from "@nixjs23n6/wc-types";
+import { Interfaces, Types } from "@nixjs23n6/types";
 import * as providerInterfaces from "../interfaces";
 import { WALLET_TYPE } from "../constants";
 import { BaseProvider } from "./BaseProvider";
@@ -38,17 +38,10 @@ export class WalletProvider {
     this._currentType = walletType;
     if (this._prevType !== this._currentType) {
       this._prevType && this.destroy(this._prevType);
-      for (let index: number = 0; index < this._classes.length; index++) {
+      for (let index = 0; index < this._classes.length; index++) {
         const Provider: Types.Class = this._classes[index];
         if (Provider.prototype.type && Provider.prototype.type === walletType) {
-          if (Provider.prototype.type === WALLET_TYPE.WALLET_CONNECT) {
-            this._container[walletType] = new Provider(
-              this._config.walletConnectConfig,
-              this._logger
-            );
-          } else {
-            this._container[walletType] = new Provider(this._logger);
-          }
+          this._container[walletType] = new Provider(this._logger);
           break;
         }
       }
