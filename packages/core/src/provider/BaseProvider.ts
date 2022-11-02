@@ -71,17 +71,29 @@ export abstract class BaseProvider {
     })();
   }
 
-  protected config(): void {
+  protected async config(): Promise<Interfaces.ResponseData<string>> {
     try {
       this.walletInstance = (window as any)[this.context];
       this.etherProvider = new ethers.ethers.providers.Web3Provider(
         this.walletInstance
       );
       this.etherSigner = this.etherProvider.getSigner();
+      const from = await this._getAccountAddressApi();
+      this.log(
+        `» 🚀 Established connection successfully to %c${this._context}`,
+        "color: #FABB51; font-size:14px"
+      );
+      return {
+        data: from,
+        status: "SUCCESS",
+      };
     } catch (error) {
-      throw BaseErrors.ERROR.MISSING_OR_INVALID.format({
-        name: "walletInstance | etherProvider | etherSigner",
-      });
+      return {
+        error: BaseErrors.ERROR.MISSING_OR_INVALID.format({
+          name: "walletInstance | etherProvider | etherSigner",
+        }),
+        status: "ERROR",
+      };
     }
   }
 
@@ -103,7 +115,7 @@ export abstract class BaseProvider {
   }
 
   // + abstract
-  abstract connect(): Promise<void>;
+  abstract connect(): Promise<Interfaces.ResponseData<string>>;
 
   abstract checkConnected(): Promise<Interfaces.ResponseData<boolean>>;
 

@@ -21,25 +21,36 @@ export class TronLinkProvider extends BaseProvider {
     return WALLET_TYPE.TRON_LINK;
   }
 
-  protected config(): void {
+  protected async config(): Promise<Interfaces.ResponseData<string>> {
     try {
       this.walletInstance = (window as any)[this.context];
+      this.log(
+        `» 🚀 Established connection successfully to %${this.context}`,
+        "color: #FABB51; font-size:14px"
+      );
+      return {
+        data: this.walletInstance.defaultAddress.base58,
+        status: "SUCCESS",
+      };
     } catch (error) {
-      throw BaseErrors.ERROR.MISSING_OR_INVALID.format({
-        name: "walletInstance | Tronweb",
-      });
+      return {
+        error: BaseErrors.ERROR.MISSING_OR_INVALID.format({
+          name: "walletInstance | Tronweb",
+        }),
+        status: "ERROR",
+      };
     }
   }
 
-  async connect(): Promise<void> {
+  async connect(): Promise<Interfaces.ResponseData<string>> {
     this.context = PLATFORM_CONTEXT.TRONWEB;
     if (Helpers.isTronInstalled()) {
-      this.config();
-      this.log(
-        "» 🚀 Established connection successfully to %TronLink Wallet Provider",
-        "color: #FABB51; font-size:14px"
-      );
+      return await this.config();
     }
+    return {
+      error: ERROR.WALLET_NOT_INSTALLED.format(),
+      status: "ERROR",
+    };
   }
 
   async checkConnected(): Promise<Interfaces.ResponseData<boolean>> {

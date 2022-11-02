@@ -58,7 +58,11 @@ export const WalletConnectionProvider: React.FC<WalletProviderProps> = ({
   }, []);
 
   const onConnect = React.useCallback(
-    async (wt: WALLET_TYPE) => {
+    async (
+      wt: WALLET_TYPE,
+      onSuccess?: (data: Interfaces.ResponseData<string>) => void,
+      onFailure?: (error: any) => void
+    ) => {
       try {
         if (!provider)
           throw BaseErrors.ERROR.MISSING_OR_INVALID.format({
@@ -71,7 +75,7 @@ export const WalletConnectionProvider: React.FC<WalletProviderProps> = ({
         storeWalletType(wt as providerTypes.WalletName);
         setWalletType(wt);
         provider.connect(wt);
-        await provider.instance.connect();
+        await provider.instance.connect().then(onSuccess).catch(onFailure);
         setInstance(provider.instance);
       } catch (error) {
         setInstance(null);
