@@ -21,8 +21,8 @@ export interface WalletContextState {
   storeWalletType(walletName: providerTypes.WalletName): void;
   onConnect(
     walletType: WALLET_TYPE,
-    onSuccess: (data: Interfaces.ResponseData<string>) => void,
-    onFailure: (error: any) => void
+    onSuccess?: (data: Interfaces.ResponseData<string>) => void,
+    onFailure?: (error: any) => void
   ): void;
   onDestroy(walletType: WALLET_TYPE): void;
   onDestroyInstance(): void;
