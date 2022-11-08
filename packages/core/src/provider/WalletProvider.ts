@@ -36,6 +36,7 @@ export class WalletProvider {
       throw new Error("Parameter invalid.");
     }
     this._currentType = walletType;
+    console.log(this._prevType, this.currentType);
     if (this._prevType !== this._currentType) {
       this._prevType && this.destroy(this._prevType);
       for (let index = 0; index < this._classes.length; index++) {
