@@ -1,6 +1,6 @@
 {
   "name": "@nixjs23n6/wc-core",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "A simple, maximally extensible, dependency minimized framework for building modern Ethereum and other dApps.",
   "sideEffects": false,
   "main": "lib/cjs/index.js",
